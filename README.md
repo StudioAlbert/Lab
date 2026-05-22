@@ -1,1 +1,1 @@
-# studioalbert.gihub.io
+# studioalbert.github.io
