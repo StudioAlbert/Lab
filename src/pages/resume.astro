@@ -17,39 +17,139 @@ const meta = {
 ---
 
 <PageLayout meta={meta}>
-	<section class="about" aria-labelledby="resume-label">
-		<div class="section-label" id="resume-label">CV</div>
-		<div class="bio">
+	<div class="resume-layout">
+		<aside class="sidebar" aria-label="Coordonnées">
+			<h1>{authorName}</h1>
+			{profile?.jobTitle && <p class="job-title">{profile.jobTitle}</p>}
+			<p class="location">Lyon, France</p>
+
+			<ul class="contacts">
+				{profile?.email && (
+					<li><a href={`mailto:${profile.email}`}>{profile.email}</a></li>
+				)}
+				<li><a href="mailto:contact@studio-albert.com">contact@studio-albert.com</a></li>
+				{profile?.linkedin && (
+					<li><a href={profile.linkedin} rel="noreferrer" target="_blank">LinkedIn</a></li>
+				)}
+				{profile?.github && (
+					<li><a href={profile.github} rel="noreferrer" target="_blank">GitHub</a></li>
+				)}
+				{profile?.employerUrl && (
+					<li><a href={profile.employerUrl} rel="noreferrer" target="_blank">studio-albert.com</a></li>
+				)}
+			</ul>
+		</aside>
+
+		<article class="bio">
 			<Content />
-		</div>
-	</section>
+		</article>
+	</div>
 </PageLayout>
 
 <style>
-	.about { margin-bottom: 64px; }
+	/* Élargir la wrap uniquement sur la page CV */
+	:global(.wrap):has(.resume-layout) {
+		max-width: 1100px;
+	}
+
+	.resume-layout {
+		display: grid;
+		grid-template-columns: 240px 1fr;
+		gap: 64px;
+		align-items: start;
+		margin-bottom: 64px;
+	}
+
+	/* ---------- Sidebar ---------- */
+	.sidebar {
+		position: sticky;
+		top: 24px;
+		align-self: start;
+		font-family: var(--font-sans);
+		font-size: 14.5px;
+		line-height: 1.6;
+		color: hsl(var(--theme-text));
+		padding: 20px 22px;
+		background: hsl(var(--theme-text) / 0.04);
+		border: 1px solid hsl(var(--theme-text) / 0.12);
+		border-radius: 6px;
+	}
+	.sidebar h1 {
+		font-family: var(--font-serif);
+		font-size: 26px;
+		font-weight: 600;
+		letter-spacing: -0.01em;
+		margin: 0 0 4px;
+	}
+	.sidebar .job-title {
+		color: hsl(var(--theme-accent));
+		margin: 0 0 2px;
+		font-size: 15px;
+	}
+	.sidebar .location {
+		opacity: 0.7;
+		margin: 0 0 20px;
+	}
+	.sidebar .contacts {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+	}
+	.sidebar .contacts li {
+		margin-bottom: 6px;
+		word-wrap: break-word;
+		overflow-wrap: anywhere;
+	}
+	.sidebar .contacts a {
+		color: hsl(var(--theme-text));
+		text-decoration: underline;
+		text-decoration-color: hsl(var(--theme-text) / 0.35);
+		text-decoration-thickness: 1px;
+		text-underline-offset: 3px;
+	}
+	.sidebar .contacts a:hover {
+		color: hsl(var(--theme-accent));
+		text-decoration-color: hsl(var(--theme-accent));
+	}
+
+	/* ---------- Body ---------- */
 	.bio {
 		font-family: var(--font-serif);
 		font-size: 17.5px;
 		line-height: 1.75;
 		color: hsl(var(--theme-text));
-		max-width: var(--reading-width);
 	}
 	.bio :global(h2) {
 		font-family: var(--font-serif);
-		font-size: 22px;
-		margin: 32px 0 12px;
+		font-size: 30px;
+		font-weight: 600;
+		letter-spacing: -0.01em;
+		margin: 48px 0 16px;
 	}
+	.bio :global(h2:first-child) { margin-top: 0; }
+	.bio :global(h3) {
+		font-family: var(--font-serif);
+		font-size: 19px;
+		font-weight: 600;
+		margin: 24px 0 4px;
+	}
+	.bio :global(p) { margin: 0 0 18px; text-wrap: pretty; }
+
+	/* No bullets, no decoration — items deviennent des lignes propres */
 	.bio :global(ul) {
-		list-style: disc;
-		list-style-position: inside;
-		margin: 0 0 28px;
+		list-style: none !important;
 		padding: 0;
+		margin: 0 0 28px;
 	}
 	.bio :global(ul li) {
-		margin-bottom: 6px;
+		list-style: none !important;
+		margin: 0 0 8px;
+		padding: 0;
 		text-wrap: pretty;
+		border: 0;
 	}
-	.bio :global(p) { margin: 0 0 22px; text-wrap: pretty; }
+	.bio :global(ul li::marker) { content: none; }
+	.bio :global(ul li:last-child) { margin-bottom: 0; }
 	.bio :global(a) {
 		color: hsl(var(--theme-text));
 		text-decoration: underline;
@@ -57,8 +157,23 @@ const meta = {
 		text-decoration-thickness: 1px;
 		text-underline-offset: 3px;
 	}
-	.bio :global(a:hover) { color: hsl(var(--theme-accent)); }
+	.bio :global(a:hover) {
+		color: hsl(var(--theme-accent));
+		text-decoration-color: hsl(var(--theme-accent));
+	}
 
-	@media (max-width: 720px) { .bio { font-size: 17px; line-height: 1.7; } }
-	@media (max-width: 420px) { .bio { font-size: 16.5px; } }
+	/* ---------- Mobile ---------- */
+	@media (max-width: 860px) {
+		:global(.wrap):has(.resume-layout) { max-width: 760px; }
+		.resume-layout {
+			grid-template-columns: 1fr;
+			gap: 32px;
+		}
+		.sidebar { position: static; }
+		.bio :global(h2) { font-size: 26px; margin: 36px 0 12px; }
+	}
+	@media (max-width: 420px) {
+		.bio { font-size: 16.5px; }
+		.bio :global(h2) { font-size: 24px; }
+	}
 </style>

@@ -1,7 +1,10 @@
 {
   "permissions": {
     "allow": [
-      "Bash(git clone *)"
+      "Bash(git clone *)",
+      "Bash(PYTHONIOENCODING=utf-8 python -c ' *)",
+      "Bash(curl -s http://localhost:4321/resume/ -o /tmp/resume.html)",
+      "Read(//tmp/**)"
     ]
   }
 }
