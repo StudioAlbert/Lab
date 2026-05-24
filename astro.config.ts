@@ -15,6 +15,7 @@ import remarkDirective from "remark-directive";
 import remarkMath from "remark-math";
 import { rehypeBasePath } from "./src/plugins/rehype-base-path";
 import { remarkAdmonitions } from "./src/plugins/remark-admonitions";
+import { remarkCollapsibleExperience } from "./src/plugins/remark-collapsible-experience";
 import { remarkReadingTime } from "./src/plugins/remark-reading-time";
 
 import rehypeExternalLinks from "rehype-external-links";
@@ -104,7 +105,13 @@ export default defineConfig({
 				},
 			],
 		],
-		remarkPlugins: [remarkReadingTime, remarkDirective, remarkAdmonitions, remarkMath],
+		remarkPlugins: [
+			remarkReadingTime,
+			remarkDirective,
+			remarkAdmonitions,
+			remarkCollapsibleExperience,
+			remarkMath,
+		],
 		remarkRehype: {
 			footnoteLabelProperties: {
 				className: [""],

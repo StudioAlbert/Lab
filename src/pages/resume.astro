@@ -27,16 +27,13 @@ const meta = {
 				{profile?.email && (
 					<li><a href={`mailto:${profile.email}`}>{profile.email}</a></li>
 				)}
-				<li><a href="mailto:contact@studio-albert.com">contact@studio-albert.com</a></li>
 				{profile?.linkedin && (
 					<li><a href={profile.linkedin} rel="noreferrer" target="_blank">LinkedIn</a></li>
 				)}
 				{profile?.github && (
 					<li><a href={profile.github} rel="noreferrer" target="_blank">GitHub</a></li>
 				)}
-				{profile?.employerUrl && (
-					<li><a href={profile.employerUrl} rel="noreferrer" target="_blank">studio-albert.com</a></li>
-				)}
+				<li><a href="/projects/">Projets</a></li>
 			</ul>
 		</aside>
 
@@ -45,6 +42,39 @@ const meta = {
 		</article>
 	</div>
 </PageLayout>
+
+<script is:inline>
+	(function () {
+		const bio = document.querySelector(".bio");
+		if (!bio) return;
+		const items = bio.querySelectorAll("details.experience");
+		if (items.length === 0) return;
+
+		// Cherche le h2 "Expérience" et y attache les boutons à droite
+		const norm = (s) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").trim().toLowerCase();
+		const expHeading = Array.from(bio.querySelectorAll("h2")).find((h) =>
+			norm(h.textContent).startsWith("experience"),
+		);
+		if (!expHeading) return;
+		expHeading.classList.add("exp-section-header");
+		const wrap = document.createElement("span");
+		wrap.className = "exp-controls";
+		wrap.innerHTML =
+			'<button type="button" data-exp-action="expand">Tout déplier</button>' +
+			'<button type="button" data-exp-action="collapse">Tout replier</button>';
+		expHeading.appendChild(wrap);
+
+		wrap.addEventListener("click", (e) => {
+			const btn = e.target.closest("button[data-exp-action]");
+			if (!btn) return;
+			const open = btn.dataset.expAction === "expand";
+			items.forEach((d) => {
+				if (open) d.setAttribute("open", "");
+				else d.removeAttribute("open");
+			});
+		});
+	})();
+</script>
 
 <style>
 	/* Élargir la wrap uniquement sur la page CV */
@@ -150,6 +180,93 @@ const meta = {
 	}
 	.bio :global(ul li::marker) { content: none; }
 	.bio :global(ul li:last-child) { margin-bottom: 0; }
+
+	/* ---------- Expériences pliables ---------- */
+	/* h2 Expérience devient un flex pour aligner les boutons à droite */
+	.bio :global(h2.exp-section-header) {
+		display: flex;
+		justify-content: space-between;
+		align-items: baseline;
+		gap: 16px;
+		flex-wrap: wrap;
+	}
+
+	/* .exp-controls est injecté en JS → pas de scope Astro, donc :global */
+	:global(.exp-controls) {
+		display: inline-flex;
+		gap: 6px;
+		font-family: var(--font-sans);
+		font-size: 11.5px;
+		font-weight: 400;
+		letter-spacing: 0;
+	}
+	:global(.exp-controls button) {
+		background: transparent;
+		border: 1px solid hsl(var(--theme-text) / 0.2);
+		color: hsl(var(--theme-text) / 0.8);
+		padding: 2px 8px;
+		border-radius: 3px;
+		cursor: pointer;
+		font: inherit;
+		line-height: 1.4;
+		transition: color 0.2s ease, border-color 0.2s ease;
+	}
+	:global(.exp-controls button:hover) {
+		border-color: hsl(var(--theme-accent));
+		color: hsl(var(--theme-accent));
+	}
+
+	.bio :global(details.experience) {
+		border-bottom: 1px solid hsl(var(--theme-text) / 0.1);
+		padding: 14px 0;
+	}
+	.bio :global(details.experience:first-of-type) {
+		border-top: 1px solid hsl(var(--theme-text) / 0.1);
+	}
+	.bio :global(details.experience > summary) {
+		cursor: pointer;
+		list-style: none;
+		display: grid;
+		grid-template-columns: 1fr auto;
+		align-items: start;
+		column-gap: 16px;
+	}
+	.bio :global(details.experience > summary::-webkit-details-marker) { display: none; }
+	.bio :global(details.experience > summary::after) {
+		content: "+";
+		grid-column: 2;
+		grid-row: 1 / span 2;
+		align-self: center;
+		font-family: var(--font-mono);
+		font-size: 22px;
+		line-height: 1;
+		opacity: 0.5;
+	}
+	.bio :global(details.experience[open] > summary::after) { content: "−"; }
+	.bio :global(details.experience > summary > h3) {
+		grid-column: 1;
+		margin: 0;
+		font-size: 22px;
+		font-weight: 600;
+		letter-spacing: -0.01em;
+	}
+	.bio :global(details.experience > summary > .exp-meta) {
+		grid-column: 1;
+		margin: 4px 0 0;
+		font-size: 14.5px;
+		font-family: var(--font-sans);
+		font-weight: 300;
+		color: hsl(var(--theme-accent));
+	}
+	/* Seul l'employeur/école (entouré de **) reste en gras ; reste du meta en light */
+	.bio :global(details.experience > summary > .exp-meta strong) {
+		font-weight: 600;
+	}
+	.bio :global(details.experience > .exp-body) {
+		margin-top: 12px;
+		padding-left: 0;
+	}
+
 	.bio :global(a) {
 		color: hsl(var(--theme-text));
 		text-decoration: underline;
